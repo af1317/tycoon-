@@ -1,0 +1,122 @@
+// Initial game state
+let money = 0;
+let upgradeLevel = 1;
+let earnPerClick = 10;
+const upgradeCostBase = 100;
+let helpers = [];
+let products = 0;
+
+// Event listener for starting the game
+document.getElementById('startGameBtn').addEventListener('click', () => {
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('gameScreen').style.display = 'block';
+    updateDisplay();
+    startConfetti();
+});
+
+// Event listener for earning money
+document.getElementById('earnMoneyBtn').addEventListener('click', () => {
+    money += earnPerClick;
+    updateDisplay();
+});
+
+// Event listener for upgrading the farm
+document.getElementById('upgradeBtn').addEventListener('click', () => {
+    const upgradeCost = upgradeCostBase * upgradeLevel;
+    if (money >= upgradeCost) {
+        money -= upgradeCost;
+        upgradeLevel++;
+        earnPerClick += 1;
+        document.getElementById('gameLevel').textContent = upgradeLevel;
+        updateDisplay();
+        playUpgradeSound();
+        startConfetti();
+    } else {
+        alert('Not enough money for upgrade!');
+    }
+});
+
+// Event listener for hiring a helper
+document.getElementById('hireHelperBtn').addEventListener('click', () => {
+    if (money >= 100) {
+        money -= 100;
+        helpers.push('Helper');
+        updateDisplay();
+    } else {
+        alert('Not enough money to hire a helper!');
+    }
+});
+
+// Event listener for selling products
+document.getElementById('sellProductsBtn').addEventListener('click', () => {
+    money += products * 10;
+    products = 0;
+    updateDisplay();
+});
+
+// Event listener for changing character clothes
+document.getElementById('changeClothesBtn').addEventListener('click', () => {
+    const clothingOptions = ['clothes1.png', 'clothes2.png'];
+    let currentClothingIndex = 0; // Cycle through clothing options
+    document.getElementById('characterImg').src = clothingOptions[currentClothingIndex];
+});
+
+// Event listener for sending messages
+document.getElementById('sendMessageBtn').addEventListener('click', () => {
+    const message = document.getElementById('messageInput').value;
+    if (message.trim() !== '') {
+        document.getElementById('chatWindow').innerHTML += `<p>You: ${message}</p>`;
+        document.getElementById('messageInput').value = '';
+    }
+});
+
+// Function to update game display
+function updateDisplay() {
+    document.getElementById('moneyDisplay').textContent = `Money: $${money}`;
+    document.getElementById('playerFarm').innerHTML = `
+        <h2>Your Farm</h2>
+        <p>Helpers: ${helpers.length}</p>
+        <p>Products: ${products}</p>
+    `;
+}
+
+// Function to start confetti effect
+function startConfetti() {
+    const confetti = document.createElement('script');
+    confetti.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.3/dist/confetti.browser.min.js';
+    document.body.appendChild(confetti);
+    confetti.onload = () => {
+        confetti();
+    };
+}
+
+// Function to play upgrade sound
+function playUpgradeSound() {
+    const audio = new Audio('upgrade-sound.mp3');
+    audio.play();
+    audio.addEventListener('ended', () => {
+        const confettiSound = new Audio('confetti-sound.mp3');
+        confettiSound.play();
+    });
+}
+
+// Simulate initial farm content
+function simulateFarmContent() {
+    products = 5;
+    updateDisplay();
+}
+
+simulateFarmContent();
+
+// Function to start special events
+function startEvent(eventType) {
+    if (eventType === 'HarvestFestival') {
+        alert('Harvest Festival is here! Special rewards and limited-time animals are available.');
+        // Add event-specific animals or items
+    }
+}
+
+// Trigger special events weekly
+setInterval(() => {
+    startEvent('HarvestFestival');
+}, 7 * 24 * 60 * 60 * 1000); // Weekly
